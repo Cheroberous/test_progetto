@@ -13,3 +13,7 @@
 .dockerhub
 .pinterest
 .spotify   con http semplice
+
+-- IDEA DEFINITIVA concordata dai membri del gruppo
+	
+	gestore del proprio profilo social di youtube , upload/delete video , video info ecc
