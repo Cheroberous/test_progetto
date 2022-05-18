@@ -3,6 +3,8 @@ var express=require('express');
 var path = require('path');
 var app= express();
 const fs = require('fs');
+const multer=require('multer');
+const { title } = require('process');
 var cred = fs.readFileSync('./credenziali.json');
 
 var sec = JSON.parse(cred);
@@ -21,12 +23,24 @@ const oAuth2Client=new google.auth.OAuth2(
     red_uri
 );
 
+var Storage=multer.diskStorage({
+    destination: function(req,file,callback){
+        callback(null,"./videos");
+    },
+    filename: function(req,file,callback){
+        callback(null,file.fieldname+"_"+Date.now()+"_"+file.originalname);
+    },
+})
+var upload= multer({
+    storage: Storage,
+}).single("file");
+
 var autenticato=false;
 var scopes = "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/userinfo.profile";
 
-app.get('/login', function(req, res){
-    res.redirect("https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/calendar.events&response_type=code&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri="+red_uri+"&client_id="+client_id);
-  });
+// app.get('/login', function(req, res){
+//     res.redirect("https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/calendar.events&response_type=code&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri="+red_uri+"&client_id="+client_id);
+//   });
 
 app.get('/home', function(req, res){
     if(!autenticato){
@@ -57,6 +71,47 @@ app.get('/home', function(req, res){
 
     }
 });
+
+app.post('/upload',(req,res)=>{
+    upload(req,res,function(err){
+        if(err) throw err;
+        console.log(req.file.path)
+        // title=req.body.title
+
+        const youtube =google.youtube({
+            version: 'v3',
+            auth: oAuth2Client
+        })
+
+        // call youtube api
+        youtube.videos.insert(
+            {
+            resource:{
+                snippet:{
+                    title:"primo_video",
+                    description:"descrizione video",
+                    tags:"argomenti"
+                },
+                status:{
+                    privacystatus:"public"
+                },
+            },
+            part:"snippet,status",
+            media:{
+                 body:fs.createReadStream(req.file.path)
+            }
+            },
+            (err,data) => {
+                if(err) throw err
+                console.log("uploading video");
+
+            }
+        )
+    })
+})
+
+
+
 
 app.get('/',(req,res)=>{
     const code=req.query.code;
