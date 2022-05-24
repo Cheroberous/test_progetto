@@ -7,6 +7,18 @@ const multer=require('multer');
 const { title } = require('process');
 var cred = fs.readFileSync('./credenziali.json');
 
+//npm install pg
+const {Client} = require('pg');
+const client = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'RDC',
+    password: 'postgres',
+    port: 5432
+});
+client.connect();
+
+
 var sec = JSON.parse(cred);
 console.log(sec);
 
