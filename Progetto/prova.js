@@ -54,6 +54,9 @@ var scopes = "https://www.googleapis.com/auth/youtube.upload https://www.googlea
 //     res.redirect("https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/calendar.events&response_type=code&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri="+red_uri+"&client_id="+client_id);
 //   });
 
+//variabile globale per username da cercare nel database
+var name = "";
+
 app.get('/home', function(req, res){
     if(!autenticato){
         console.log("non autenticato");
@@ -75,14 +78,32 @@ app.get('/home', function(req, res){
         oauth2.userinfo.get(function(err,response){
             if(err) throw err
             console.log(response.data);
-            var name=response.data.name;
+            name=response.data.name;
 
             res.render("index_a",{name:name});
         })
-        
-
     }
 });
+
+var query = "INSERT INTO utenti (id_utente) SELECT ($name) where NOT EXISTS (select id_utente from utenti where id_utente = $name) RETURNING *";
+
+//callback
+client.query(query, name, (err, res) => {
+    if(err) {
+        console.log(err.stack)
+    } else{
+        console.log(res.rows[0]) //id_utente: name
+    }
+});
+
+//promise
+client
+    .query(query, name)
+    .then(res => {
+        console.log(res.rows[0])
+        //{id_utente: name}
+    })
+    .catch(e => console.error(e.stack))
 
 app.post('/upload',(req,res)=>{
     upload(req,res,function(err){
@@ -121,9 +142,6 @@ app.post('/upload',(req,res)=>{
         )
     })
 })
-
-
-
 
 app.get('/',(req,res)=>{
     const code=req.query.code;
