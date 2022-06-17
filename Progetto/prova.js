@@ -104,6 +104,7 @@ app.post('/upload',(req,res)=>{
             (err,data) => {
                 if(err) throw err
                 console.log("uploading video");
+                // res.render
 
             }
         )
