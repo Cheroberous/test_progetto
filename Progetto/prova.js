@@ -9,6 +9,7 @@ var cred = fs.readFileSync('./credenziali.json');
 
 //npm install pg
 const {Client} = require('pg');
+const { response } = require('express');
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
@@ -55,7 +56,7 @@ var scopes = "https://www.googleapis.com/auth/youtube.upload https://www.googlea
 //   });
 
 //variabile globale per username da cercare nel database
-var name = "";
+var nome = "";
 
 app.get('/home', function(req, res){
     if(!autenticato){
@@ -78,32 +79,35 @@ app.get('/home', function(req, res){
         oauth2.userinfo.get(function(err,response){
             if(err) throw err
             console.log(response.data);
-            name=response.data.name;
+            nome=response.data.name;
 
-            res.render("index_a",{name:name});
+            res.render("index_a",{name:nome});
+
+            const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *"
+            const value = [nome]
+            
+            //callback
+            client.query(query, value, (err, res) => {
+                if(err) {
+                    console.log(err.stack)
+                } else{
+                console.log(res.rows[0]) //id_utente: name
+                }
+            });
+
+            //promise
+            client
+                .query(query, value)
+                .then(res => {
+                    console.log(res.rows[0])
+                    //{id_utente: name}
+                })
+                .catch(e => console.error(e.stack))
         })
     }
 });
 
-var query = "INSERT INTO utenti (id_utente) SELECT ($name) where NOT EXISTS (select id_utente from utenti where id_utente = $name) RETURNING *";
 
-//callback
-client.query(query, name, (err, res) => {
-    if(err) {
-        console.log(err.stack)
-    } else{
-        console.log(res.rows[0]) //id_utente: name
-    }
-});
-
-//promise
-client
-    .query(query, name)
-    .then(res => {
-        console.log(res.rows[0])
-        //{id_utente: name}
-    })
-    .catch(e => console.error(e.stack))
 
 app.post('/upload',(req,res)=>{
     upload(req,res,function(err){
