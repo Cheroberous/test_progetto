@@ -55,6 +55,21 @@ var scopes = "https://www.googleapis.com/auth/youtube.upload https://www.googlea
 //     res.redirect("https://accounts.google.com/o/oauth2/v2/auth?scope=https://www.googleapis.com/auth/calendar.events&response_type=code&include_granted_scopes=true&state=state_parameter_passthrough_value&redirect_uri="+red_uri+"&client_id="+client_id);
 //   });
 
+
+app.get('/',(req,res)=>{
+    const code=req.query.code;
+    if(code){
+        oAuth2Client.getToken(code,function(err,tokens){
+            if(err)throw err
+            console.log("ti sei autenticato");
+            oAuth2Client.setCredentials(tokens);
+            autenticato=true;
+            res.redirect('/home');
+        })
+    }
+})
+
+
 //variabile globale per username da cercare nel database
 var nome = "";
 
@@ -145,20 +160,10 @@ app.post('/upload',(req,res)=>{
             }
         )
     })
-})
+});
 
-app.get('/',(req,res)=>{
-    const code=req.query.code;
-    if(code){
-        oAuth2Client.getToken(code,function(err,tokens){
-            if(err)throw err
-            console.log("ti sei autenticato");
-            oAuth2Client.setCredentials(tokens);
-            autenticato=true;
-            res.redirect('/home');
-        })
-    }
-})
-
+app.post('/twitter', (req, res) => {
+    //todo
+});
 
 app.listen(3000);
