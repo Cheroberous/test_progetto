@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>pagina principale utente autenticato</h1>
+    <p>
+        sei l'utente <%= name %> 
+        <!-- anche se sembra un errore funziona bene -->
+    </p>
+    <!-- <a class="button">clicca</a> -->
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+          <div class="form-group">
+              <input type="text" name="title" placeholder="Title" required class="form-control">
+          </div>
+          <div class="form-group">
+              <textarea name="description" class="form-control" cols="30" rows="10" placeholder="description"></textarea>
+          </div>
+          <div class="form-group">
+              <input id="tags-input" type="text" class="form-control" name="tags" data-role="tagsinput" placeholder="tags"/>
+          </div>
+          <div class="form-group">
+          <input
+            type="file"
+            class="form-control"
+            name="file"
+            required
+            id=""
+          />
+          </div>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-block btn-danger">
+            Upload Video
+          </button>
+        </div>
+      </form>
+</body>
+</html>
