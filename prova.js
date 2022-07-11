@@ -1,15 +1,25 @@
 const {google} = require('googleapis');
-var express=require('express');
+var express = require('express');
 var path = require('path');
-var app= express();
+
 const fs = require('fs');
 const multer=require('multer');
 const { title } = require('process');
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
+
+
 var cred = fs.readFileSync('./credenziali.json');
+
+
+
+const app = express();
+
 
 //npm install pg
 const {Client} = require('pg');
 const { response } = require('express');
+const { oauth2 } = require('googleapis/build/src/apis/oauth2');
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
@@ -162,8 +172,112 @@ app.post('/upload',(req,res)=>{
     })
 });
 
-app.post('/twitter', (req, res) => {
-    //todo
+
+//TWITTER API
+const oauth = require('oauth')
+
+const { promisify } = require('util');
+
+var cred = fs.readFileSync('./tweetcred.json');
+
+var sec = JSON.parse(cred)
+
+const TWITTER_CONSUMER_API_KEY = sec.web.API_KEY;
+const TWITTER_CONSUMER_API_SECRET_KEY = sec.web.API_KEY_SECRET;
+
+const COOKIE_SECRET = process.env.npm_config_cookie_secret || process.env.COOKIE_SECRET
+
+console.log(TWITTER_CONSUMER_API_KEY, TWITTER_CONSUMER_API_SECRET_KEY);
+
+const oauthConsumer = new oauth.OAuth(
+    'https://twitter.com/oauth/request_token', 'https://twitter.com/oauth/access_token',
+    TWITTER_CONSUMER_API_KEY,
+    TWITTER_CONSUMER_API_SECRET_KEY,
+    '1.0A', 'http://localhost:3000/twitter/callback', 'HMAC-SHA1'
+);
+
+app.use(cookieParser())
+app.use(session({ secret: COOKIE_SECRET || 'secret'}))
+
+var tw_auth = false;
+var reqTok = '';
+var reqTokS = '';
+
+app.post('/twitter', (req, res) =>{
+    if(!tw_auth)res.redirect('/twitter/authorize');
+    else{
+        console.log('HELLO TWEEEEET');
+    }
 });
 
+app.get('/twitter/logout', logout)
+  function logout (req, res, next) {
+    res.clearCookie('twitter_screen_name')
+    req.session.destroy(() => res.redirect('/'))
+  }
+
+app.get('/twitter/authenticate', twitter('authenticate'))
+app.get('/twitter/authorize', twitter('authorize'))
+function twitter(method = 'authorize') {
+    return async (req, res) =>{
+        const {oauthRequestToken, oauthRequestTokenSecret} = await getOAuthRequestToken()
+
+        console.log(`/twitter/${method} ->`, { oauthRequestToken, oauthRequestTokenSecret })
+
+        reqTok = oauthRequestToken;
+        reqTokS = oauthRequestTokenSecret;
+
+        const authorizationURL = `https://api.twitter.com/oauth/${method}?oauth_token=${oauthRequestToken}`
+        console.log('redirecting user to ', authorizationURL);
+        res.redirect(authorizationURL);
+    }
+}
+
+app.get('/twitter/callback', async (req, res) =>{
+    const {oauthRequestToken} = reqTok;
+    const {oauthRequestTokenSecret} = reqTokS;
+
+    const {oaut_verifier: oauthVerifier} = req.query;
+    console.log('/twitter/callback', {oauthRequestToken, oauthRequestTokenSecret, oauthVerifier})
+
+    const {oauthAccessToken, oauthAccessTokenSecret, results} = await getOAuthAccessTokenWith({ oauthRequestToken, oauthRequestTokenSecret, oauthVerifier})
+    req.session.oauthAccessToken = oauthAccessToken;
+
+    const {user_id: userId /*, screen_name */} = results;
+    const user = oauthGetUserById(userId, {oauthAccessToken, oauthAccessTokenSecret});
+    
+    req.session.twitter_screen_name = user.screen_name;
+
+    tw_auth = true;
+    res.redirect ('/twitter');
+})
+
 app.listen(3000);
+
+
+
+//FUNZIONI TWITTER
+async function oauthGetUserById (userId, { oauthAccessToken, oauthAccessTokenSecret } = {}) {
+    return promisify(oauthConsumer.get.bind(oauthConsumer))(`https://api.twitter.com/1.1/users/show.json?user_id=${userId}`, oauthAccessToken, oauthAccessTokenSecret)
+      .then(body => JSON.parse(body))
+  }
+
+  async function getOAuthAccessTokenWith ({ oauthRequestToken, oauthRequestTokenSecret, oauthVerifier } = {}) {
+    return new Promise((resolve, reject) => {
+      oauthConsumer.getOAuthAccessToken(oauthRequestToken, oauthRequestTokenSecret, oauthVerifier, function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
+        return error
+          ? reject(new Error('Error getting OAuth access token'))
+          : resolve({ oauthAccessToken, oauthAccessTokenSecret, results })
+      })
+    })
+  }
+
+  async function getOAuthRequestToken () {
+    return new Promise((resolve, reject) => {
+      oauthConsumer.getOAuthRequestToken(function (error, oauthRequestToken, oauthRequestTokenSecret, results) {
+        return error
+          ? reject(new Error('Error getting OAuth request token'))
+          : resolve({ oauthRequestToken, oauthRequestTokenSecret, results })
+      })
+    })
+  }
