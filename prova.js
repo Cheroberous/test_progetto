@@ -291,6 +291,7 @@ async function getRequest({
   
 
 app.post('/twitter', async(req, res) => {
+    var oAuthAccessToken = '';
     while(!tw_auth){
         //get Request token
         const oAuthRequestToken = await requestToken();
@@ -302,17 +303,15 @@ app.post('/twitter', async(req, res) => {
         const pin = await input('Paste pin here: ');
 
         //Get access token
-        const oAuthAccessToken = await accessToken(oAuthRequestToken, pin.trim());
-
-        //Make the request
-        const response = await getRequest(oAuthAccessToken);
-        console.dir(response, {
-            depth: null
-        });
+        oAuthAccessToken = await accessToken(oAuthRequestToken, pin.trim());
 
         tw_auth = true;    
     }
-    console.log('hello');
+    //Make the request
+    const response = await getRequest(oAuthAccessToken);
+    console.dir(response, {
+        depth: null
+    });
 });
 
 
