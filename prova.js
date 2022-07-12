@@ -171,20 +171,13 @@ app.post('/upload',(req,res)=>{
 //TWITTER API
 var tw_auth = false;
 
-app.post('/twitter', (req, res) => {
-    if(!tw_auth){
-        res.redirect('/twitter/authorize');
-    }
-    else {
-        console.log('Hello twitter');
-    }
-});
 
 //npm install got@11.8.3 oauth-1.0a crypto 
 const qs = require('querystring');
 const OAuth = require('oauth-1.0a');
 const crypto = require('crypto');
 const got = require('got');
+var request = require('request');
 
 var tcred = fs.readFileSync('./tweetcred.json');
 var tsec = JSON.parse(tcred);
@@ -297,26 +290,29 @@ async function getRequest({
 }
   
 
-app.get('/twitter/authorize', async (req,res) =>{
-    //get Request token
-    const oAuthRequestToken = await requestToken();
+app.post('/twitter', async(req, res) => {
+    while(!tw_auth){
+        //get Request token
+        const oAuthRequestToken = await requestToken();
 
-    //Get authorization
-    authorizeURL.searchParams.append('oauth_token', oAuthRequestToken.oauth_token);
-    res.redirect(authorizeURL.href);
-    const pin = await input('Paste pin here: ');
+        //Get authorization
+        authorizeURL.searchParams.append('oauth_token', oAuthRequestToken.oauth_token);
+        res.redirect(authorizeURL.href);
 
-    //Get access token
-    const oAuthAccessToken = await accessToken(oAuthRequestToken, pin.trim());
+        const pin = await input('Paste pin here: ');
 
-    //Make the request
-    const response = await getRequest(oAuthAccessToken);
-    console.dir(response, {
-        depth: null
-    });
+        //Get access token
+        const oAuthAccessToken = await accessToken(oAuthRequestToken, pin.trim());
 
-    tw_auth = true;
-    res.redirect('/twitter');
+        //Make the request
+        const response = await getRequest(oAuthAccessToken);
+        console.dir(response, {
+            depth: null
+        });
+
+        tw_auth = true;    
+    }
+    console.log('hello');
 });
 
 
