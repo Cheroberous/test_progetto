@@ -1,5 +1,6 @@
 {"web": {
     "API_KEY": "jClfAhpw7pUR8CzgJvIhldwAg",
-    "API_KEY_SECRET": "O12WKU3LtWeowd91nwEIuOtL7Hfz6sq0gubjDB7QsEvjhVi5aT"
+    "API_KEY_SECRET": "O12WKU3LtWeowd91nwEIuOtL7Hfz6sq0gubjDB7QsEvjhVi5aT",
+    "redirect_uris":["http://localhost:3000/twitter/callback"]
     }
 }
