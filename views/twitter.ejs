@@ -13,10 +13,17 @@
         <!-- anche se sembra un errore funziona bene -->
     </p>
     <a class="button">clicca</a>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
+    <form action="/tweet" method="POST" enctype="multipart/form-data">
         <div class="form-group">
           <div class="form-group">
-              <textarea name="description" class="form-control" cols="30" rows="10" placeholder="description"></textarea>
+              <textarea name="tweet" class="form-control" cols="30" rows="10" placeholder="description"></textarea>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-block btn-danger">
+              Tweet
+            </button>
           </div>
         </div>
-</div>
+    </form>
+</body>
+</html>

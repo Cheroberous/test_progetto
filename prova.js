@@ -172,7 +172,10 @@ app.post('/upload',(req,res)=>{
 var tw_auth = false;
 
 const oauth = require('oauth');
-const { get } = require('request');
+const got = require('got');
+const  get = require('request');
+const  request = require('http');
+var Twit = require('twit');
 
 var request_token_url = 'https://api.twitter.com/oauth/request_token';
 var access_token_url = 'https://api.twitter.com/oauth/access_token';
@@ -189,7 +192,7 @@ var RequestToken = "";
 var RequestSecret = "";
 var AccessToken = "";
 var AccessSecret = "";
-var screen_name = "SUCA";
+var screen_name = "";
 
 
 console.log (tsec);
@@ -238,16 +241,35 @@ app.get('/twitter/callback', (req, res) => {
           AccessToken = oauthAccessToken;
           AccessSecret = oauthAccessTokenSecret;
           console.log(results);
-          
+
           screen_name = results.screen_name;
           
           res.render("twitter",{name:screen_name});
           
       }    
   });
-
-  // tw_auth = true;
+  tw_auth = true;
   // res.redirect('/twitter/connect');
+});
+
+
+
+
+app.post('/tweet', (req, res) => {
+
+  const endpointURL = 'https://api.twitter.com/1.1/statuses/update.json';
+
+  var T = new Twit({
+    consumer_key: consumer_key,
+    consumer_secret: consumer_secret,
+    access_token: AccessToken,
+    access_token_secret: AccessSecret
+  });
+
+  T.post(endpointURL, {status: 'Hello world'}, function(err, data, response) {
+    console.log(data);
+  })
+  
 });
 
 app.listen(3000);
