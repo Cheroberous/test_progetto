@@ -189,6 +189,8 @@ var RequestToken = "";
 var RequestSecret = "";
 var AccessToken = "";
 var AccessSecret = "";
+var screen_name = "SUCA";
+
 
 console.log (tsec);
 
@@ -222,13 +224,11 @@ app.get('/twitter/connect', (req, res) => {
     }
     else {
       console.log("autenticato su twitter!");
-      res.send('CIAO');
     }
 })
-
 app.get('/twitter/callback', (req, res) => {
-  console.log(RequestToken);
-  console.log(RequestSecret);
+  console.log("Request token: " + RequestToken);
+  console.log("Request Secret: " + RequestSecret);
   console.log(req.query.oauth_verifier);
 
   consumer().getOAuthAccessToken(RequestToken, RequestSecret, req.query.oauth_verifier, function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
@@ -237,12 +237,17 @@ app.get('/twitter/callback', (req, res) => {
       } else {
           AccessToken = oauthAccessToken;
           AccessSecret = oauthAccessTokenSecret;
+          console.log(results);
+          
+          screen_name = results.screen_name;
+          
+          res.render("twitter",{name:screen_name});
+          
       }    
   });
 
-  tw_auth = true;
-  res.redirect('/twitter/connect');
-  
+  // tw_auth = true;
+  // res.redirect('/twitter/connect');
 });
 
 app.listen(3000);
