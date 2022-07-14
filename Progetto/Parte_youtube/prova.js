@@ -9,19 +9,64 @@ const fs = require('fs');
 const multer=require('multer');
 const { title } = require('process');
 var cred = fs.readFileSync('./credenziali.json');
-
+const WebSocket = require('ws');
 //npm install pg
 const {Client} = require('pg');
 
-const identificativo_canale="UCVuZe4vjCbQLCLLeXW2NH_Q";
 
+//////////////////////////////////////////////////////////////////////////////////////////
+const ws = new WebSocket.Server({ port: 9998 });
+
+
+const client = new Client({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'rdc_1',
+    // password: 'postgres',
+    password: 'ciaodafrancesca',
+    port: 5432
+  });
+
+  ws.on('connection', function connection(ws) {
+
+    console.log("new client connected");
+    // ws.send("hello new client");
+  
+  
+    ws.on('message', function incoming(message) {
+       
+      console.log('received_s: %s', message);
+      ws.send("the message i receiver is"+message);
+  
+      if(message=="connect"){
+        client.connect();
+  
+      }
+      if(message=="query"){
+        client.connect();
+        const query = "SELECT * FROM azioni "
+        client
+                    .query(query)
+                    .then(res => {
+                        console.log(res.rows[0])
+                        
+                    })
+                    .catch(e => console.error(e.stack))
+  
+      }
+    });
+  
+   
+  
+  });
+///////////////////////////////////////////////////////////////////////////////////////////
 var sec = JSON.parse(cred);
 console.log(sec);
 
 // console.log(sec);
-
-var channel_id;
-var a_t;
+// const identificativo_canale="UCVuZe4vjCbQLCLLeXW2NH_Q";
+// var channel_id;
+// var a_t;
 const client_id = sec.web.client_id;
 const client_secret = sec.web.client_secret;
 const red_uri=sec.web.redirect_uris[0];
@@ -100,10 +145,10 @@ app.get('/home', function(req, res){
             if(err) throw err
             console.log(response.data);
             var name=response.data.name;
-            channel_id=response.data.id;
-            console.log("cannel id ",channel_id);
+            // channel_id=response.data.id;
+            
 
-            res.render("index_a",{name:name});
+            res.render("home_youtube",{name:name});
         })
         
 
@@ -176,7 +221,9 @@ app.get('/delete',(req,res)=>{
     
 })
 
-
+app.get('/upload_form',(req,res)=>{
+  res.render('index_a');
+})
 app.post('/upload',(req,res)=>{
     //metto il file in videos e chiamo callback fnz
     upload(req,res,function(err){
@@ -221,6 +268,7 @@ app.post('/upload',(req,res)=>{
         )  .then(function(response) {
             // Handle the results here (response.result has the parsed body).
             console.log("video caricato ", response);
+            res.render("home_youtube");
           },
           function(err) { console.error("Execute error", err); });
         
@@ -245,7 +293,7 @@ app.get('/',(req,res)=>{
 })
 
 
-app.listen(3000);
+app.listen(3000,()=>console.log("server is listening on 3000"));
 
 /*
 per trovare id 
