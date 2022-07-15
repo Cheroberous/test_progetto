@@ -4,7 +4,7 @@
   "description": "Prove git e programmi con api",
   "main": "prova.js",
   "scripts": {
-    "start": "node prova.js",
+    "start": "nodemon prova.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
