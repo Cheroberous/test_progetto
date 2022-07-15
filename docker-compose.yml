@@ -9,7 +9,7 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_DB='RDC'
+      - POSTGRES_DB='rdc'
       - POSTGRES_USER='postgres'
       - POSTGRES_PASSWORD='postgres'
       

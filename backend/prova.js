@@ -18,7 +18,7 @@ const { oauth2 } = require('googleapis/build/src/apis/oauth2');
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'RDC',
+    database: 'rdc',
     password: 'postgres',
     port: 5432
 });
