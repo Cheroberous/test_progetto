@@ -40,14 +40,14 @@ class video {
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 const ws = new WebSocket.Server({ port: 9998 });
-
+var name = ""; //variabile per query database
 
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'rdc_1',
+    database: 'RDC',
     // password: 'postgres',
-    password: 'ciaodafrancesca',
+    password: 'postgres',
     port: 5432
   });
 
@@ -68,9 +68,10 @@ const client = new Client({
       }
       if(message=="query"){
         client.connect();
-        const query = "SELECT * FROM azioni "
+        const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
+        const value = [name];
         client
-                    .query(query)
+                    .query(query, value)
                     .then(res => {
                         console.log(res.rows[0])
                         
@@ -166,7 +167,7 @@ app.get('/home', function(req, res){
         oauth2.userinfo.get(function(err,response){
             if(err) throw err
             // console.log(response.data);
-            var name=response.data.name;
+            name=response.data.name;
             // channel_id=response.data.id;
             
 
