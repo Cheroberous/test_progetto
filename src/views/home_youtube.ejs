@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <SCRIPT type="text/javascript" language="javascript"> 
+       
+       
+        // if ("WebSocket" in window)
+        //     {
+        //     alert("WebSocket is supported by your Browser!");}
+
+           const socket= new WebSocket('ws://localhost:9998/');
+           
+
+           socket.addEventListener('open',function(even){
+            socket.send("ciao server");
+           })
+
+           socket.addEventListener('message',function(event){
+            console.log('Message from server ',event.data);
+           })
+
+           const Database_conn=()=>{
+            socket.send("connnect");
+           }
+           const Db_info=()=>{
+            socket.send("query");
+           }
+
+    </script>
+
+    <title>Document</title>
+</head>
+<body>
+    <h1>Home page for youtube operations</h1>
+
+
+    <!-- <button onclick="Mes()">send message</button> -->
+    <button onclick="Database_conn">connect db</button>
+    <button onclick="Db_info()">run query</button>
+
+    <a href="/upload_form">upload a video on your channel</a>
+    <br>
+    <a href="/videos">get the list of you channel's videos</a>
+    <br>
+   
+    <form action = "/twitter" method = "POST">
+        <div class="form-group">
+          <button class="btn btn-block btn-danger">
+            Twitter post
+          </button>
+        </div>
+      </form>
+    
+</body>
+</html>
