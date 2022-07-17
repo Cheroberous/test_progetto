@@ -21,10 +21,14 @@ services:
       - node1:node1
     depends_on:
       - node1
+      - database
     ports:
       - "8080:80"
       - "8083:443"
- 
+    expose:
+      - "80"
+      - "443"
+
   node1:
     build: 
       context: .
@@ -36,6 +40,8 @@ services:
       - "3000"
     environment:
       - INSTANCE=node1
+    depends_on:
+      - database
 
 
   
