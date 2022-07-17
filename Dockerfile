@@ -10,4 +10,4 @@ RUN npm install -g npm@8.14.0
 COPY . .
 
 EXPOSE 3000
-CMD ["npm", "backend/start"]
+CMD ["node", "backend/prova.js"]

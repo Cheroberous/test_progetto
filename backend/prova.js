@@ -8,7 +8,11 @@ var app= express();
 const fs = require('fs');
 const multer=require('multer');
 const { title } = require('process');
-var cred = fs.readFileSync('./credenziali.json');
+
+//var cred = fs.readFileSync('/home/dario/Università/Reti/test_progetto/backend/credenziali.json');
+require('dotenv').config({ path: '/home/dario/Università/Reti/test_progetto/backend/.env' });
+
+
 const WebSocket = require('ws');
 //npm install pg
 const {Client} = require('pg');
@@ -45,7 +49,7 @@ var name = ""; //variabile per query database
 const client = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'RDC',
+    database: 'rdc',
     // password: 'postgres',
     password: 'postgres',
     port: 5432
@@ -85,16 +89,16 @@ const client = new Client({
   
   });
 ///////////////////////////////////////////////////////////////////////////////////////////
-var sec = JSON.parse(cred);
+//var sec = JSON.parse(cred);
 // console.log(sec);
 
 // console.log(sec);
 // const identificativo_canale="UCVuZe4vjCbQLCLLeXW2NH_Q";
 // var channel_id;
 // var a_t;
-const client_id = sec.web.client_id;
-const client_secret = sec.web.client_secret;
-const red_uri=sec.web.redirect_uris[0];
+const client_id = "363448232063-6gutecgr4r0me31qmib2sg9bspdabhvn.apps.googleusercontent.com";
+const client_secret = "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";
+const red_uri="http://localhost:3000/";
 
 app.set('view engine','ejs');
 
@@ -357,11 +361,12 @@ var access_token_url = 'https://api.twitter.com/oauth/access_token';
 var authorize_url = 'https://api.twitter.com/oauth/authorize';
 
 
-var tcred = fs.readFileSync('./tweetcred.json');
-var tsec = JSON.parse(tcred);
-const consumer_key = tsec.web.API_KEY;
-const consumer_secret = tsec.web.API_KEY_SECRET;
-const red_t_uri = tsec.web.redirect_uris[0];
+//var tcred = fs.readFileSync('/home/dario/Università/Reti/test_progetto/backend/tweetcred.json');
+//var tsec = JSON.parse(tcred);
+
+const consumer_key = "jClfAhpw7pUR8CzgJvIhldwAg";
+const consumer_secret = "O12WKU3LtWeowd91nwEIuOtL7Hfz6sq0gubjDB7QsEvjhVi5aT";
+const red_t_uri = "http://localhost:3000/twitter/callback";
 
 var RequestToken = "";
 var RequestSecret = "";
@@ -370,7 +375,7 @@ var AccessSecret = "";
 var screen_name = "";
 
 
-console.log (tsec);
+//console.log (tsec);
 
 function consumer(){
     return new oauth.OAuth(
