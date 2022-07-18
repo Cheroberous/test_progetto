@@ -30,10 +30,10 @@ Nginx:
   - si comporta da revers proxy e fa load balancing del traffico
   
 Node:
-  - 3 istanza presenti
+  - 3 istanze presenti
   - usa le websocket per comunicare con il db  (5)
     
-Postgresql:
+Couch:
   - mantiene lo storico delle azioni eseguite
      
      
