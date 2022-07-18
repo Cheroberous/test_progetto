@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  database:
+  couchdb:
     image: couchdb:latest
     restart: always
     ports:
@@ -11,6 +11,7 @@ services:
       - COUCHDB_PASSWORD=password
     volumes:
         - ./dbdata:/opt/couchdb/data
+
 
   nginx:
     build:
@@ -24,7 +25,7 @@ services:
       - node1
       - node2
       - node3
-      - database
+      - couchdb
     ports:
       - "8080:80"
       - "8083:443"
@@ -43,7 +44,7 @@ services:
     environment:
       - INSTANCE=node1
     depends_on:
-      - database  
+      - couchdb  
     networks:
       - app-network
 
@@ -59,7 +60,7 @@ services:
     environment:
       - INSTANCE=node2
     depends_on:
-      - database
+      - couchdb
     networks:
       - app-network
 
@@ -75,7 +76,7 @@ services:
     environment:
       - INSTANCE=node3
     depends_on:
-      - database
+      - couchdb
     networks:
       - app-network
 

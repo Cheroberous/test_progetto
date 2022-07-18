@@ -47,14 +47,14 @@ class video {
 const wss = new WebSocket.Server({ server:server });
 
 
-const client = new Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'rdc',
-  // password: 'postgres',
-  password: 'postgres',
-  port: 5432
-});
+// const client = new Client({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'rdc',
+//   // password: 'postgres',
+//   password: 'postgres',
+//   port: 5432
+// });
 
 var nome = "";
 
@@ -72,22 +72,22 @@ var nome = "";
       console.log(nome);
 
       if(message=="query"){
-        try{
-          client.connect();
-          console.log("connected");
-          const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
-          const value = [nome];
-          client
-                      .query(query, value)
-                      .then(res => {
-                          console.log(res.rows[0])
+        //try{
+          //client.connect();
+          //console.log("connected");
+          // const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
+          // const value = [nome];
+          // client
+          //             .query(query, value)
+          //             .then(res => {
+          //                 console.log(res.rows[0])
                         
-                      })
-          }
-          catch(error){
-            console.log(error);
-          }
-  
+          //             })
+          // }
+          // catch(error){
+          //   console.log(error);
+          // }
+        console.log(nome);
       }
     });
   
