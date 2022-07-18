@@ -72,17 +72,21 @@ var nome = "";
       console.log(nome);
 
       if(message=="query"){
-        client.connect();
-        console.log("connected");
-        const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
-        const value = [nome];
-        client
-                    .query(query, value)
-                    .then(res => {
-                        console.log(res.rows[0])
+        try{
+          client.connect();
+          console.log("connected");
+          const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
+          const value = [nome];
+          client
+                      .query(query, value)
+                      .then(res => {
+                          console.log(res.rows[0])
                         
-                    })
-                    .catch(e => console.error(e.stack))
+                      })
+          }
+          catch(error){
+            console.log(error);
+          }
   
       }
     });

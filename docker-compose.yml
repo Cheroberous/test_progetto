@@ -1,17 +1,16 @@
 version: '3'
 
 services:
-
   database:
-    image: postgres:latest
-    expose:
-      - "5432"
+    image: couchdb:latest
+    restart: always
     ports:
-      - "5432:5432"
+      - "5984:5984"
     environment:
-      - POSTGRES_DB="rdc"
-      - POSTGRES_USER="postgres"
-      - POSTGRES_PASSWORD="postgres"
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    volumes:
+        - ./dbdata:/opt/couchdb/data
 
   nginx:
     build:
@@ -43,6 +42,8 @@ services:
       - "3000:3000"
     environment:
       - INSTANCE=node1
+    depends_on:
+      - database  
     networks:
       - app-network
 
@@ -57,6 +58,8 @@ services:
       - "3001:3000"
     environment:
       - INSTANCE=node2
+    depends_on:
+      - database
     networks:
       - app-network
 
@@ -71,6 +74,8 @@ services:
       - "3002:3000"
     environment:
       - INSTANCE=node3
+    depends_on:
+      - database
     networks:
       - app-network
 
