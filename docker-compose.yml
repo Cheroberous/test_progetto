@@ -3,7 +3,8 @@ version: '3'
 services:
   couchdb:
     image: couchdb:latest
-    restart: always
+    container_name: couchdb_database
+    restart: on-failure
     ports:
       - "5984:5984"
     environment:
