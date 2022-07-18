@@ -56,25 +56,26 @@ const client = new Client({
   port: 5432
 });
 
+var nome = "";
+
+
   wss.on('connection', function connection(ws) {
 
     console.log("new client connected");
     // ws.send("hello new client");
   
-  
     ws.on('message', function incoming(message) {
        
       console.log('received_s: %s', message);
       ws.send("the message i receiver is"+message);
-  
-      if(message=="connect"){
-        client.connect();
-  
-      }
+      
+      console.log(nome);
+
       if(message=="query"){
         client.connect();
+        console.log("connected");
         const query = "INSERT INTO utenti (id_utente) SELECT * FROM (SELECT $1) AS tmp WHERE NOT EXISTS (SELECT id_utente FROM utenti WHERE id_utente = $1) RETURNING *";
-        const value = [name];
+        const value = [nome];
         client
                     .query(query, value)
                     .then(res => {
@@ -180,11 +181,11 @@ app.get('/home', function(req, res){
       oauth2.userinfo.get(function(err,response){
           if(err) throw err
           // console.log(response.data);
-          name=response.data.name;
+          nome=response.data.name;
           // channel_id=response.data.id;
           
 
-          res.render("home_youtube",{name:name});
+          res.render("home_youtube",{name:nome});
       })
       
 
@@ -477,6 +478,7 @@ app.get('/rimando',(req,res)=>{
 
 
 server.listen(process.env.PORT,()=>console.log("server in ascolto"));
+//app.listen(3000);
 
 // app.listen(process.env.PORT, () => {
 //   // winston.info(`NODE_ENV: ${process.env.NODE_ENV}`);

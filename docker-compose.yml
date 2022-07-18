@@ -1,6 +1,17 @@
-version: '2'
+version: '3'
 
 services:
+
+  database:
+    image: postgres:latest
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB="rdc"
+      - POSTGRES_USER="postgres"
+      - POSTGRES_PASSWORD="postgres"
 
   nginx:
     build:
@@ -14,8 +25,10 @@ services:
       - node1
       - node2
       - node3
+      - database
     ports:
       - "8080:80"
+      - "8083:443"
     networks:
       - app-network
 
