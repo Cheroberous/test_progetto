@@ -1,0 +1,33 @@
+Dopo aver effettuato l'autenticazione
+
+le richieste risultano semplici dato l'uso della libreria youtube apposita
+richiesta lista video:
+
+ "part":[
+            "snippet"
+        ],
+        "forMine": true,
+        "type": [
+          "video"
+        ]
+
+upload video:
+
+resource:{
+                snippet:{
+                    title:title,
+                    description:description,
+                    tags:tags
+                },
+                status:{
+                    privacystatus:"public"
+                },
+            },
+            part:"snippet,status",
+            media:{
+                 body:fs.createReadStream(req.file.path)
+            }
+
+video delete:
+
+    "id": id_video

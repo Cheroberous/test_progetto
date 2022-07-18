@@ -1,0 +1,20 @@
+name: Python application
+
+on:
+  push:
+   branches: [ master ]
+  pull_request:
+    branches: [ master ]
+      
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build & Push Image
+      run: |
+        echo "cfda228b-1251-4545-b621-b4c4e40b03b4" | docker login -u "cheroberous" --password-stdin
+        docker image build -t cheroberous/gitaction:v1 .
+        docker push cheroberous/gitaction:v1
