@@ -17,7 +17,8 @@ Architettura:
 
 
 
-![Reti p_220717_233932](https://user-images.githubusercontent.com/102479391/179483023-e66742b8-9bad-4a91-8688-9b9e92f2fdb1.jpg)
+![hhh](https://user-images.githubusercontent.com/102479391/179608526-cbbd380b-0304-48fd-8284-6c6f57e35e77.jpg)
+
 
 
 
