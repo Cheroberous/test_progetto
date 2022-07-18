@@ -7,10 +7,11 @@ const fs = require('fs');
 const multer=require('multer');
 const { title } = require('process');
 var cred = fs.readFileSync('./credenziali.json');
+const server = require('http').createServer(app);
 const WebSocket = require('ws');
 const {Client} = require('pg');
 const bodyParser = require('body-parser');
-var quanti_tweet=12;
+var quanti_tweet=13;
 app.use(
     bodyParser.urlencoded({
       extended: false,
@@ -42,7 +43,8 @@ class video {
 	// get email() { return this._email; }
 	
 }
-const ws = new WebSocket.Server({ port: 9998 });
+// const ws = new WebSocket.Server({ port: 9998 });
+const wss = new WebSocket.Server({ server:server });
 
 
 const client = new Client({
@@ -54,7 +56,7 @@ const client = new Client({
   port: 5432
 });
 
-  ws.on('connection', function connection(ws) {
+  wss.on('connection', function connection(ws) {
 
     console.log("new client connected");
     // ws.send("hello new client");
@@ -126,7 +128,9 @@ var Storage=multer.diskStorage({
       callback(null,"./videos");
   },
   filename: function(req,file,callback){
-      callback(null,file.fieldname+"_"+Date.now()+"_"+file.originalname);
+      // callback(null,file.fieldname+"_"+Date.now()+"_"+file.originalname);
+      callback(null,file.originalname);
+
   },
 })
 var upload= multer({
@@ -472,10 +476,10 @@ app.get('/rimando',(req,res)=>{
 })
 
 
+server.listen(process.env.PORT,()=>console.log("server in ascolto"));
 
-
-app.listen(process.env.PORT, () => {
-  // winston.info(`NODE_ENV: ${process.env.NODE_ENV}`);
-  // winston.info(`INSTANCE: ${process.env.INSTANCE}`);
-  // winston.info(`EXPRESS: ${process.env.PORT}`);
-});
+// app.listen(process.env.PORT, () => {
+//   // winston.info(`NODE_ENV: ${process.env.NODE_ENV}`);
+//   // winston.info(`INSTANCE: ${process.env.INSTANCE}`);
+//   // winston.info(`EXPRESS: ${process.env.PORT}`);
+// });
