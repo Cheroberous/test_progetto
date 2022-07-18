@@ -51,7 +51,7 @@ Postgresql:
      
   #Avvio
   
-     dcker-compose up
+     docker-compose up
   
      
      
